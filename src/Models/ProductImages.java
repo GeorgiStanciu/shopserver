@@ -8,6 +8,13 @@ public class ProductImages implements Serializable{
 	private int productId;
 	private String picture;
 	
+	public ProductImages( int productId, String picture) {
+		super();
+		this.id = id;
+		this.productId = productId;
+		this.picture = picture;
+	}
+
 	public ProductImages(int id, int productId, String picture) {
 		super();
 		this.id = id;
@@ -15,6 +22,7 @@ public class ProductImages implements Serializable{
 		this.picture = picture;
 	}
 
+	
 	public int getId() {
 		return id;
 	}

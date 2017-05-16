@@ -33,7 +33,10 @@ public class ReviewDataGateway {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setString(1, review.getTitle());
 			 preparedStmt.setString(2, review.getReview());
-		     preparedStmt.setDate(3, new Date(review.getDate().getTime()));
+			 if(review.getDate() != null)
+		    	 preparedStmt.setDate(3, new Date(review.getDate().getTime()));
+		     else
+		    	 preparedStmt.setDate(3, null);
 		     preparedStmt.setInt(4, review.getQualifying());
 		     preparedStmt.setInt(5, review.getUser().getId());
 		     preparedStmt.setInt(6, review.getProductId());
@@ -61,8 +64,11 @@ public class ReviewDataGateway {
 			preparedStmt = conn.prepareStatement(query);
 			 preparedStmt.setString(1, review.getTitle());
 			 preparedStmt.setString(2, review.getReview());
-		     preparedStmt.setDate(3, new Date(review.getDate().getTime()));
-		     preparedStmt.setInt(4, review.getQualifying());
+			 if(review.getDate() != null)
+		    	 preparedStmt.setDate(3, new Date(review.getDate().getTime()));
+		     else
+		    	 preparedStmt.setDate(3, null);		     
+			 preparedStmt.setInt(4, review.getQualifying());
 		     preparedStmt.setInt(5, review.getUser().getId());
 		     preparedStmt.setInt(6, review.getProductId());
 		     preparedStmt.setInt(7,  review.getId());
@@ -89,6 +95,7 @@ public class ReviewDataGateway {
         return true;
     }		
 	
+	
 
 	public ArrayList<ReviewModel> findAll() {
 		String query = "SELECT * FROM " + table;
@@ -100,7 +107,7 @@ public class ReviewDataGateway {
 				int id = result.getInt("id");
 				String title = result.getString("title");
 				String review = result.getString("review");
-				Date date = result.getDate("date");
+				java.util.Date date = result.getDate("date");
 				int qualifying = result.getInt("qualifying");
      			int userId = result.getInt("user_id");
      			int productId = result.getInt("product_id");
@@ -122,12 +129,12 @@ public class ReviewDataGateway {
 		try{
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setInt(1, productId);
-			ResultSet result = preparedStmt.executeQuery(query);
+			ResultSet result = preparedStmt.executeQuery();
 			while(result.next()){
 				int id = result.getInt("id");
 				String title = result.getString("title");
 				String review = result.getString("review");
-				Date date = result.getDate("date");
+				java.util.Date date = result.getDate("date");
 				int qualifying = result.getInt("qualifying");
      			int userId = result.getInt("user_id");
      		
@@ -140,6 +147,12 @@ public class ReviewDataGateway {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return reviews;
 	}
 	
@@ -158,7 +171,7 @@ public class ReviewDataGateway {
 	 			
 	 				String title = result.getString("title");
 	 				String reviewText = result.getString("review");
-	 				Date date = result.getDate("date");
+	 				java.util.Date date = result.getDate("date");
 	 				int qualifying = result.getInt("qualifying");
 	      			int userId = result.getInt("user_id");
 	      			int productId = result.getInt("product_id");

@@ -10,7 +10,7 @@ public class Product implements Serializable{
     private String description;
     private float price;
     private ArrayList<String> images;
-    private int category;
+    private String category;
     private int discount;
     private String seller;
     private int guarantee;
@@ -20,14 +20,33 @@ public class Product implements Serializable{
 
 
 
-    public Product(int id, String name, String description, float price) {
+    public Product(int id, String name, String description, String category, float price) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
+        this.category = category;
+        this.discount = 0;
+        this.seller = "";
+        this.guarantee = 0;
+        this.quantity = -1;
+        this.rating = 0.00f;
+    }
+    
+    public Product( String name, String description, String category, float price) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.discount = 0;
+        this.seller = "";
+        this.guarantee = 0;
+        this.quantity = -1;
+        this.rating = 0.00f;
     }
 
-    public Product(int id, String name, String description, ArrayList<String> images, int category,
+
+    public Product(int id, String name, String description, ArrayList<String> images, String category,
                    float price, int discount, String seller, int guarantee, int quantity, ArrayList<ReviewModel> reviews) {
         this.id = id;
         this.name = name;
@@ -43,21 +62,40 @@ public class Product implements Serializable{
         this.rating = 0.00f;
     }
     
-    public Product(int id, String name, String description, ArrayList<String> images, int category,
+    public Product(int id, String name, String description, ArrayList<String> images, String category,
             float price, int discount, String seller, int guarantee, int quantity, ArrayList<ReviewModel> reviews, float rating) {
- this.id = id;
- this.name = name;
- this.description = description;
- this.price = price;
- this.images = images;
- this.category = category;
- this.discount = discount;
- this.seller = seller;
- this.guarantee = guarantee;
- this.quantity = quantity;
- this.reviews = reviews;
- this.rating = rating;
+		 
+    	
+    	this.id = id;
+		 this.name = name;
+		 this.description = description;
+		 this.price = price;
+		 this.images = images;
+		 this.category = category;
+		 this.discount = discount;
+		 this.seller = seller;
+		 this.guarantee = guarantee;
+		 this.quantity = quantity;
+		 this.reviews = reviews;
+		 this.rating = rating;
 }
+    
+    public Product(String name, String description, ArrayList<String> images, String category,
+            float price, int discount, String seller, int guarantee, int quantity, ArrayList<ReviewModel> reviews, float rating) {
+		 
+   		 this.name = name;
+		 this.description = description;
+		 this.price = price;
+		 this.images = images;
+		 this.category = category;
+		 this.discount = discount;
+		 this.seller = seller;
+		 this.guarantee = guarantee;
+		 this.quantity = quantity;
+		 this.reviews = reviews;
+		 this.rating = rating;
+}
+    
 
     public int getId() {
         return id;
@@ -99,11 +137,11 @@ public class Product implements Serializable{
         this.images = images;
     }
 
-    public int getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(int category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 

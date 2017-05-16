@@ -7,11 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import Models.Product;
+import Models.ProductBasket;
 import Models.ShoppingBasket;
+import Models.UserModel;
 
 public class ShoppingBasketDataGateway {
 
-/*	private Connection conn;
+	private Connection conn;
 	private final String table = "shopping_basket";
 	public ShoppingBasketDataGateway(){
 		try {
@@ -24,11 +27,10 @@ public class ShoppingBasketDataGateway {
 	
 	public int add(ShoppingBasket basket) {
 	    String[] returnId = {"id" };
-		 String query = "INSERT INTO " + table + " (user_id, product_id, product_quantity) VALUES (?,?,?)";
+		 String query = "INSERT INTO " + table + " (user_id) VALUES (?)";
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setInt(1, basket.getUser().getId());
-			 preparedStmt.setString(2, basket.getProduct().getId());
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
@@ -44,15 +46,14 @@ public class ShoppingBasketDataGateway {
 	}
 
 
-	public boolean update(ShoppingBasketImages image) {
+	public boolean update(ShoppingBasket basket) {
 
-		String query = "UPDATE " + table + " set ShoppingBasket_id = ?, pciture = ? where id = ?";
+		String query = "UPDATE " + table + " set user_id ? where id = ?";
 	    PreparedStatement preparedStmt;
 		try {
 			preparedStmt = conn.prepareStatement(query);
-			preparedStmt.setInt(1, image.getShoppingBasketId());
-			 preparedStmt.setString(2, image.getPicture());
-			 preparedStmt.setInt(3, image.getId());
+		    preparedStmt.setInt(1, basket.getUser().getId());
+			 preparedStmt.setInt(2, basket.getId());
 		     preparedStmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -77,63 +78,60 @@ public class ShoppingBasketDataGateway {
     }		
 	
 
-	public ArrayList<ShoppingBasketImages> findAll() {
+	public ArrayList<ShoppingBasket> findAll() {
 		String query = "SELECT * FROM " + table;
-		ArrayList<ShoppingBasketImages> images = new ArrayList();
+		ArrayList<ShoppingBasket> baskets = new ArrayList();
 		try{
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			ResultSet result = preparedStmt.executeQuery(query);
 			while(result.next()){
 				int id = result.getInt("id");
-				String picture = result.getString("picture");
-     			int ShoppingBasketId = result.getInt("ShoppingBasket_id");
-   
+				int userId = result.getInt("userId");
      			
-     			images.add(new ShoppingBasketImages(id, ShoppingBasketId, picture));
+				UserModel user = new UserDataGateway().findById(userId);
+				ArrayList<Product> products = new ArrayList<>();
+				ArrayList<Integer> quantities = new ArrayList<>();
+     			
+				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway().findAllByShoppingBasket(id);
+				for(int i = 0; i < productBaskets.size(); i++){
+					products.add(productBaskets.get(i).getProduct());
+					quantities.add(productBaskets.get(i).getQuantity());
+				}
+				
+     			baskets.add(new ShoppingBasket(id, user, products, quantities));
 			}
 			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
-		return images;
+		return baskets;
 	}
-	
-	public ArrayList<ShoppingBasketImages> findAllByShoppingBasket(int ShoppingBasketId) {
-		String query = "SELECT * FROM " + table + " WHERE ShoppingBasket_id = ?";
-		ArrayList<ShoppingBasketImages> images = new ArrayList();
-		try{
-			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			preparedStmt.setInt(1, ShoppingBasketId);
-			ResultSet result = preparedStmt.executeQuery(query);
-			while(result.next()){
-				int id = result.getInt("id");
-				String picture = result.getString("picture");
-     			images.add(new ShoppingBasketImages(id, ShoppingBasketId, picture));
-     					}
-			result.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} 
-		return images;
-	}
-	
 
 
 
-	public ShoppingBasketImages findById(int id) {
+
+	public ShoppingBasket findById(int id) {
 
 		String query = "SELECT * FROM " + table + " WHERE id = ?";
-		ShoppingBasketImages image = null;
+		ShoppingBasket basket = null;
 		   try  {
 	        	 PreparedStatement preparedStmt = conn.prepareStatement(query);
 	        	 preparedStmt.setInt(1, id);
 	        	 ResultSet result = preparedStmt.executeQuery();
 	        	 if(result.next()){
-	 			
-	        		String picture = result.getString("picture");
-	      			int ShoppingBasketId = result.getInt("ShoppingBasket_id");
-	    
-	      			image = new ShoppingBasketImages(id, ShoppingBasketId, picture);
+	 				int userId = result.getInt("user_id");
+	      			
+	 				UserModel user = new UserDataGateway().findById(userId);
+	 				ArrayList<Product> products = new ArrayList<>();
+	 				ArrayList<Integer> quantities = new ArrayList<>();
+	      			
+	 				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway().findAllByShoppingBasket(id);
+	 				for(int i = 0; i < productBaskets.size(); i++){
+	 					products.add(productBaskets.get(i).getProduct());
+	 					quantities.add(productBaskets.get(i).getQuantity());
+	 				}
+	 				
+	      			basket= new ShoppingBasket(id, user, products, quantities);
 
 	 			}
 	     		result.close();
@@ -141,6 +139,39 @@ public class ShoppingBasketDataGateway {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
-		return image;
-	}*/
+		return basket;
+	}
+	
+	
+	
+	public ShoppingBasket findByUserId(int userId) {
+
+		String query = "SELECT * FROM " + table + " WHERE user_id = ?";
+		ShoppingBasket basket = null;
+		   try  {
+	        	 PreparedStatement preparedStmt = conn.prepareStatement(query);
+	        	 preparedStmt.setInt(1, userId);
+	        	 ResultSet result = preparedStmt.executeQuery();
+	        	 if(result.next()){
+	 				int id = result.getInt("id");
+	 				UserModel user = new UserDataGateway().findById(userId);
+	 				ArrayList<Product> products = new ArrayList<>();
+	 				ArrayList<Integer> quantities = new ArrayList<>();
+	      			
+	 				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway().findAllByShoppingBasket(id);
+	 				for(int i = 0; i < productBaskets.size(); i++){
+	 					products.add(productBaskets.get(i).getProduct());
+	 					quantities.add(productBaskets.get(i).getQuantity());
+	 				}
+	 				
+	      			basket= new ShoppingBasket(id, user, products, quantities);
+
+	 			}
+	     		result.close();
+	 
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		return basket;
+	}
 }

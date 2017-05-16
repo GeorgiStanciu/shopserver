@@ -33,7 +33,10 @@ public class UserDataGateway {
 		     preparedStmt.setString(1, user.getName());
 			 preparedStmt.setString(2, user.getEmail());
 		     preparedStmt.setString(3, user.getAddress());
-		     preparedStmt.setDate(4, new Date(user.getBirthDate().getTime()));
+		     if(user.getBirthDate() != null)
+		    	 preparedStmt.setDate(4, new Date(user.getBirthDate().getTime()));
+		     else
+		    	 preparedStmt.setDate(4, null);
 		     preparedStmt.setString(5, user.getPictureUrl());
 		     preparedStmt.setString(6, user.getPhone());
 		     preparedStmt.setString(7, user.getCardNumber());
@@ -55,7 +58,7 @@ public class UserDataGateway {
 
 	public boolean update(UserModel user) {
 
-		String query = "UPDATE " + table + " set name = ?, email = ?, address = ?, birth_date = ?"
+		String query = "UPDATE " + table + " set name = ?, email = ?, address = ?, birth_date = ?,"
 				+ "picture = ?, phone = ?, card_number = ?, sex = ? where id = ?";
 	    PreparedStatement preparedStmt;
 		try {
@@ -63,7 +66,10 @@ public class UserDataGateway {
 			 preparedStmt.setString(1, user.getName());
 			 preparedStmt.setString(2, user.getEmail());
 		     preparedStmt.setString(3, user.getAddress());
-		     preparedStmt.setDate(4, new Date(user.getBirthDate().getTime()));
+		     if(user.getBirthDate() != null)
+		    	 preparedStmt.setDate(4, new Date(user.getBirthDate().getTime()));
+		     else
+		    	 preparedStmt.setDate(4, null);
 		     preparedStmt.setString(5, user.getPictureUrl());
 		     preparedStmt.setString(6, user.getPhone());
 		     preparedStmt.setString(7, user.getCardNumber());

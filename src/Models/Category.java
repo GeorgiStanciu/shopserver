@@ -9,6 +9,7 @@ public class Category implements Serializable{
     private String parent;
     private int icon;
     private String image;
+    
     public Category(int id, String name, String parent, String image) {
         this.id = id;
         this.name = name;
@@ -16,6 +17,11 @@ public class Category implements Serializable{
         this.image = image;
     }
 
+    public Category(String name, String parent, String image) {
+        this.name = name;
+        this.parent = parent;
+        this.image = image;
+    }
     public int getId() {
         return id;
     }

@@ -24,6 +24,12 @@ public class UserModel implements Serializable {
         this.email = email;
         this.id  = id;
         this.name = name;
+        this.address = "";
+		this.birthDate = null;
+		this.pictureUrl = "";
+		this.phone = "";
+		this.cardNumber = "";
+		this.sex = "Masculine";
     }
 
     public UserModel( int id, String email, String name, String address, Date birthDate){
@@ -48,6 +54,19 @@ public class UserModel implements Serializable {
 			String cardNumber, String sex) {
 		super();
 		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.address = address;
+		this.birthDate = birthDate;
+		this.pictureUrl = pictureUrl;
+		this.phone = phone;
+		this.cardNumber = cardNumber;
+		this.sex = sex;
+	}
+    
+    public UserModel( String name, String email, String address, Date birthDate, String pictureUrl, String phone,
+			String cardNumber, String sex) {
+		super();
 		this.name = name;
 		this.email = email;
 		this.address = address;

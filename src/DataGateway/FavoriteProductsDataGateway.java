@@ -1,21 +1,22 @@
 package DataGateway;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import Models.ProductImages;
+import Models.Product;
+import Models.UserModel;
+import Models.FavoriteProduct;
 
-public class ProductImagesDataGateway {
+public class FavoriteProductsDataGateway {
 
-
+	
 	private Connection conn;
-	private final String table = "product_images";
-	public ProductImagesDataGateway(){
+	private final String table = "favorite_products";
+	public FavoriteProductsDataGateway(){
 		try {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
 		} catch (SQLException e) {
@@ -24,13 +25,13 @@ public class ProductImagesDataGateway {
 
 	}
 	
-	public int add(ProductImages image) {
+	public int add(FavoriteProduct favoriteProduct) {
 	    String[] returnId = {"id" };
-		 String query = "INSERT INTO " + table + " (product_id, picture) VALUES (?,?)";
+		 String query = "INSERT INTO " + table + " (user_id, product_id) VALUES (?,?)";
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
-		     preparedStmt.setInt(1, image.getProductId());
-			 preparedStmt.setString(2, image.getPicture());
+		     preparedStmt.setInt(1, favoriteProduct.getUser().getId());
+			 preparedStmt.setInt(2, favoriteProduct.getProduct().getId());
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
@@ -46,15 +47,15 @@ public class ProductImagesDataGateway {
 	}
 
 
-	public boolean update(ProductImages image) {
+	public boolean update(FavoriteProduct favoriteProduct) {
 
-		String query = "UPDATE " + table + " set product_id = ?, picture = ? where id = ?";
+		String query = "UPDATE " + table + " set basket_id = ?, product_id= ? where id = ?";
 	    PreparedStatement preparedStmt;
 		try {
 			preparedStmt = conn.prepareStatement(query);
-			preparedStmt.setInt(1, image.getProductId());
-			 preparedStmt.setString(2, image.getPicture());
-			 preparedStmt.setInt(3, image.getId());
+			preparedStmt.setInt(1, favoriteProduct.getUser().getId());
+			preparedStmt.setInt(2, favoriteProduct.getProduct().getId());
+			preparedStmt.setInt(3, favoriteProduct.getId());
 		     preparedStmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -79,70 +80,69 @@ public class ProductImagesDataGateway {
     }		
 	
 
-
-	public ArrayList<ProductImages> findAll() {
+	public ArrayList<FavoriteProduct> findAll() {
 		String query = "SELECT * FROM " + table;
-		ArrayList<ProductImages> images = new ArrayList();
+		ArrayList<FavoriteProduct> favoriteProducts = new ArrayList();
 		try{
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			ResultSet result = preparedStmt.executeQuery(query);
 			while(result.next()){
 				int id = result.getInt("id");
-				String picture = result.getString("picture");
+     			int userId = result.getInt("user_id");
      			int productId = result.getInt("product_id");
-   
-     			
-     			images.add(new ProductImages(id, productId, picture));
+				Product product = new ProductDataGateway().findById(productId);
+				
+				UserModel user = new UserDataGateway().findById(userId);
+     			favoriteProducts.add(new FavoriteProduct(id, user, product));
 			}
 			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
-		return images;
+		return favoriteProducts;
 	}
 	
-	public ArrayList<ProductImages> findAllByProduct(int productId) {
-		String query = "SELECT * FROM " + table + " WHERE product_id = ?";
-		ArrayList<ProductImages> images = new ArrayList();
+	public ArrayList<FavoriteProduct> findAllByUserId(int userId) {
+		String query = "SELECT * FROM " + table + " WHERE user_id = ?";
+		ArrayList<FavoriteProduct> favoriteProducts = new ArrayList();
 		try{
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			preparedStmt.setInt(1, productId);
+			preparedStmt.setInt(1, userId);
 			ResultSet result = preparedStmt.executeQuery();
 			while(result.next()){
 				int id = result.getInt("id");
-				String picture = result.getString("picture");
-     			images.add(new ProductImages(id, productId, picture));
+     			int productId = result.getInt("product_id");
+				Product product = new ProductDataGateway().findById(productId);
+				UserModel user = new UserDataGateway().findById(userId);
+
+     			favoriteProducts.add(new FavoriteProduct(id, user, product));
      					}
 			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return images;
+		return favoriteProducts;
 	}
 	
 
 
 
-	public ProductImages findById(int id) {
+	public FavoriteProduct findById(int id) {
 
 		String query = "SELECT * FROM " + table + " WHERE id = ?";
-		ProductImages image = null;
+		FavoriteProduct favoriteProduct = null;
 		   try  {
 	        	 PreparedStatement preparedStmt = conn.prepareStatement(query);
 	        	 preparedStmt.setInt(1, id);
 	        	 ResultSet result = preparedStmt.executeQuery();
 	        	 if(result.next()){
 	 			
-	        		String picture = result.getString("picture");
-	      			int productId = result.getInt("product_id");
-	    
-	      			image = new ProductImages(id, productId, picture);
+	     			int userId = result.getInt("user_id");
+	     			int productId = result.getInt("product_id");
+					Product product = new ProductDataGateway().findById(productId);
+					UserModel user = new UserDataGateway().findById(userId);
+
+	     			favoriteProduct = new FavoriteProduct(id, user, product);
 
 	 			}
 	     		result.close();
@@ -150,8 +150,7 @@ public class ProductImagesDataGateway {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
-		return image;
+		return favoriteProduct;
 	}
-
 	
 }

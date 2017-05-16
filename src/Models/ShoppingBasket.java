@@ -17,6 +17,13 @@ public class ShoppingBasket implements Serializable{
         this.productsNumber = productsNumber;
     }
 
+    public ShoppingBasket(UserModel user, ArrayList<Product> products, ArrayList<Integer> productsNumber) {
+        this.user = user;
+        this.products = products;
+        this.productsNumber = productsNumber;
+    }
+
+    
     public int getId() {
         return id;
     }
@@ -48,8 +55,8 @@ public class ShoppingBasket implements Serializable{
     public void setProductsNumber(ArrayList<Integer> productsNumber) {
         this.productsNumber = productsNumber;
     }
-
-    public float calcSum(){
+    
+	public float calcSum(){
         float sum = 0.0f;
         for(int i = 0; i < products.size(); i++){
             float newSum = products.get(i).getPrice() - products.get(i).getPrice() * products.get(i).getDiscount() / 100;

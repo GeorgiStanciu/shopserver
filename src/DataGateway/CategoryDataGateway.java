@@ -66,6 +66,26 @@ public class CategoryDataGateway {
 		return categories;
 	}
 	
+	public ArrayList<Category> findByParent(String parent) {
+		String query = "SELECT * FROM " + table + " WHERE parent = ?";
+		ArrayList<Category> categories = new ArrayList();
+		try{
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setString(1, parent);
+			ResultSet result = preparedStmt.executeQuery(query);
+			while(result.next()){
+				int id = result.getInt("id");
+				String name = result.getString("name");
+				String icon = result.getString("icon");
+				categories.add(new Category(id, name, parent, icon));
+			}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return categories;
+	}
+	
 	public Category findById(int id) {
 
 		String query = "SELECT * FROM " + table + " WHERE id = ?";
@@ -76,6 +96,30 @@ public class CategoryDataGateway {
 	        	 ResultSet result = preparedStmt.executeQuery();
 	        	 if(result.next()){
 	        		 String name = result.getString("name");
+	      			String parent = result.getString("parent");
+	 				String icon = result.getString("icon");
+	 				category = new Category(id, name, parent, icon);
+	      				
+	     		}
+	     		result.close();
+	 
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		return category;
+	}
+	
+	
+	public Category findByName(String name) {
+
+		String query = "SELECT * FROM " + table + " WHERE name = ?";
+		Category category= null;
+		   try  {
+	        	 PreparedStatement preparedStmt = conn.prepareStatement(query);
+	        	 preparedStmt.setString(1, name);
+	        	 ResultSet result = preparedStmt.executeQuery();
+	        	 if(result.next()){
+	        		int id = result.getInt("id");
 	      			String parent = result.getString("parent");
 	 				String icon = result.getString("icon");
 	 				category = new Category(id, name, parent, icon);

@@ -12,6 +12,7 @@ public class OrderModel implements Serializable {
     private ArrayList<Integer> productNumber;
     private Date orderDate;
     private float cost;
+    
     public OrderModel(int id, UserModel user, ArrayList<Product> products, ArrayList<Integer> productNumber, Date orderDate, float cost) {
         this.id = id;
         this.user = user;
@@ -21,6 +22,14 @@ public class OrderModel implements Serializable {
         this.orderDate = orderDate;
     }
 
+    public OrderModel(UserModel user, ArrayList<Product> products, ArrayList<Integer> productNumber, Date orderDate, float cost) {
+        this.user = user;
+        this.products = products;
+        this.productNumber = productNumber;
+        this.cost = cost;
+        this.orderDate = orderDate;
+    }
+    
     public int getId() {
         return id;
     }
@@ -68,4 +77,8 @@ public class OrderModel implements Serializable {
     public void setCost(float cost) {
         this.cost = cost;
     }
+
+
+    
+    
 }
