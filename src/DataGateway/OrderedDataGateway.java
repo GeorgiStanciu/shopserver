@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import Models.OrderModel;
 import Models.OrderedProduct;
 import Models.Product;
+import Models.ProductImages;
 import Models.UserModel;
 
 public class OrderedDataGateway {
@@ -41,7 +42,18 @@ public class OrderedDataGateway {
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
-		    	 return result.getInt(1);
+		    	 int id = result.getInt(1);
+		    	 if(order.getProducts() != null && order.getProducts().size() >0){
+		    		 OrderedProductDataGateway orderProductGateway = new OrderedProductDataGateway();
+		    		 for(int i = 0; i < order.getProducts().size(); i++){
+		    			 float cost = order.getProductNumber().get(i) * (order.getProducts().get(i).getPrice() - order.getProducts().get(i).getPrice() *
+		    					 		order.getProducts().get(i).getDiscount() / 100);
+		    			 OrderedProduct product = new OrderedProduct(id, order.getProducts().get(i).getId(), 
+		    					 order.getProductNumber().get(i), cost);
+		    			 orderProductGateway.add(product);
+		    		 }
+		    	 }
+		    	 return id;
 		     }
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

@@ -40,9 +40,9 @@ public class MainTest {
 
 		}
 */
-		UserDataGateway userGateway = new UserDataGateway();
-		UserModel user = userGateway.findById(2);
-		ProductDataGateway productGateway = new ProductDataGateway();
+//		UserDataGateway userGateway = new UserDataGateway();
+//		UserModel user = userGateway.findById(2);
+//		ProductDataGateway productGateway = new ProductDataGateway();
 		
 		
 //		FavoriteProductsDataGateway favoriteGateway = new FavoriteProductsDataGateway();
@@ -64,23 +64,29 @@ public class MainTest {
 //			System.out.println(basket.getProducts().get(i).getId() + " " + basket.getProductsNumber().get(i));
 //		}
 		
-		OrderedDataGateway orderedGateway = new OrderedDataGateway();
-		OrderModel order = new OrderModel(user, null, null, new Date(), 0);
-		//orderedGateway.add(order);
+//		OrderedDataGateway orderedGateway = new OrderedDataGateway();
+//		OrderModel order = new OrderModel(user, null, null, new Date(), 0);
+//		//orderedGateway.add(order);
+//		
+//		Product product = productGateway.findById(72);
+//
+//		OrderedProductDataGateway ordedProducGateway =  new OrderedProductDataGateway();
+//		float price = product.getPrice() - product.getPrice() * product.getDiscount() / 100;
+//		OrderedProduct orderedProduct = new OrderedProduct(1, product.getId(), 1, price);
+//		//ordedProducGateway.add(orderedProduct);
+//		
+//		
+//		order = orderedGateway.findById(1);
+//		for(int i = 0; i < order.getProducts().size(); i++){
+//			System.out.println(order.getProducts().get(i).getId() + " " + 
+//								order.getProducts().get(i).getPrice() + " " + order.getProductNumber().get(i) + " " +
+//								order.getCost());
+//		}
 		
-		Product product = productGateway.findById(72);
+		
+		ProductDataGateway productGateway = new ProductDataGateway();
+		ArrayList<Product> products = new ArrayList();
+		ArrayList<String> images;
 
-		OrderedProductDataGateway ordedProducGateway =  new OrderedProductDataGateway();
-		float price = product.getPrice() - product.getPrice() * product.getDiscount() / 100;
-		OrderedProduct orderedProduct = new OrderedProduct(1, product.getId(), 1, price);
-		//ordedProducGateway.add(orderedProduct);
-		
-		
-		order = orderedGateway.findById(1);
-		for(int i = 0; i < order.getProducts().size(); i++){
-			System.out.println(order.getProducts().get(i).getId() + " " + 
-								order.getProducts().get(i).getPrice() + " " + order.getProductNumber().get(i) + " " +
-								order.getCost());
-		}
 	}
 }
