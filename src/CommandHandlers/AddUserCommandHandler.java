@@ -17,8 +17,18 @@ public class AddUserCommandHandler {
 
 		UserDataGateway gateway = new UserDataGateway();
 		CommandResponse response = new CommandResponse();
-		response.setResponse(gateway.add((UserModel) command.getObject()));
+		UserModel user = (UserModel) command.getObject();
+		UserModel isUser = gateway.findByFirebaseId(user.getFirebaseId());
+		if(isUser == null){
+			response.setResponse(gateway.add(user));
+			String gson = new Gson().toJson(response);
+	        os.writeObject(gson);
+		}
+		else{
+		response.setResponse(isUser.getId());
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+		}
+		gateway.close();
     }
 }

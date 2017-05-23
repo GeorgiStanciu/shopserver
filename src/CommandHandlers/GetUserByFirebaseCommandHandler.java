@@ -7,16 +7,16 @@ import com.google.gson.Gson;
 
 import CommandResponses.CommandResponse;
 import Commands.Command;
-import DataGateway.ReviewDataGateway;
-import Models.ReviewModel;
+import DataGateway.UserDataGateway;
 
-public class UpdateReviewCommandHandler {
+public class GetUserByFirebaseCommandHandler {
 
-	public void updateReviewCommandHandler(ObjectOutputStream os, Command command) throws IOException {
+	
+	public void getUserCommandHandler(ObjectOutputStream os, Command command) throws IOException {
 
-		ReviewDataGateway gateway = new ReviewDataGateway();
+		UserDataGateway gateway = new UserDataGateway();
 		CommandResponse response = new CommandResponse();
-		response.setResponse(gateway.update((ReviewModel) command.getObject()));
+		response.setResponse(gateway.findByFirebaseId(( (String) command.getObject())));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
         gateway.close();

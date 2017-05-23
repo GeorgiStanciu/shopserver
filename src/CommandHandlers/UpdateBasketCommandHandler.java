@@ -21,5 +21,6 @@ public class UpdateBasketCommandHandler {
 		response.setResponse(gateway.update((ShoppingBasket) command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

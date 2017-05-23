@@ -8,6 +8,10 @@ public class Command implements Serializable{
 
 	private CommandEnum command;
 	private Object object;
+	
+	public Command(){
+		
+	}
 	public Command(CommandEnum command){
 		this.command = command;
 	}

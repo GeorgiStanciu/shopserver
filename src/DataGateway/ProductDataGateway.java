@@ -86,6 +86,24 @@ public class ProductDataGateway {
 		}
 		return true;
 	}
+	
+	
+	public boolean updateRating(int productId, float rating) {
+
+		String query = "UPDATE " + table + " set rating = ? where id = ?";
+	    PreparedStatement preparedStmt;
+		try {
+			 preparedStmt = conn.prepareStatement(query);
+		     preparedStmt.setFloat(1, rating);
+		     preparedStmt.setInt(2,  productId);
+		     preparedStmt.executeUpdate();
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 
 	public boolean delete(int id) {
 		String query = "DELETE FROM "+ table + " WHERE id = ?";
@@ -125,8 +143,6 @@ public class ProductDataGateway {
      			ArrayList<ReviewModel> reviews = reviewGateway.findAllByProduct(id);
      			
      			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway();
-     			if(id == 71)
-     				System.out.println("");
      			ArrayList<ProductImages> productImages = imageGateway.findAllByProduct(id);
      			ArrayList<String> images = new ArrayList();
      			for(ProductImages image: productImages){
@@ -144,7 +160,46 @@ public class ProductDataGateway {
 		return products;
 	}
 	
-
+	
+	
+	public ArrayList<Product> findAllByCategory(String categoryName) {
+		String query = "SELECT * FROM " + table + " where category = ?";
+		ArrayList<Product> products = new ArrayList();
+		try{
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			Category category = new CategoryDataGateway().findByName(categoryName);
+			preparedStmt.setInt(1, category.getId());
+       	 	ResultSet result = preparedStmt.executeQuery();
+			while(result.next()){
+				int id = result.getInt("id");
+				String name = result.getString("name");
+				String description = result.getString("description");
+				float price = result.getFloat("price");
+     			int discount = result.getInt("discount");
+     			String seller = result.getString("seller");
+     			int guarantee = result.getInt("guarantee");
+     			int quantity = result.getInt("quantity");
+     			float rating = result.getFloat("rating");
+     			
+     			ReviewDataGateway reviewGateway = new ReviewDataGateway();
+     			ArrayList<ReviewModel> reviews = reviewGateway.findAllByProduct(id);
+     			
+     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway();
+     			ArrayList<ProductImages> productImages = imageGateway.findAllByProduct(id);
+     			ArrayList<String> images = new ArrayList();
+     			for(ProductImages image: productImages){
+     				images.add(image.getPicture());
+     			}
+     			
+     			products.add(new Product(id, name, description, images, categoryName, price, discount, seller, guarantee,
+     					quantity, reviews, rating));
+			}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return products;
+	}
 
 
 	public Product findById(int id) {
@@ -187,6 +242,16 @@ public class ProductDataGateway {
 	            e.printStackTrace();
 	        }
 		return product;
+	}
+	
+	public void close(){
+		
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

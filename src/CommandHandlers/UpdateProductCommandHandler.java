@@ -19,5 +19,6 @@ public class UpdateProductCommandHandler {
 		response.setResponse(gateway.update((Product) command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

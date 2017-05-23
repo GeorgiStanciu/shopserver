@@ -2,10 +2,11 @@ package Models;
 
 public enum CommandEnum {
 
-	ViewProductCommand,
-	ViewCategoryCommandByParent,
-	ViewOrderedCommand,
-	ViewUserCommand,
+	ViewProductsCommand,
+	ViewCategoriesCommandByParent,
+	ViewOrderesCommand,
+	ViewUsersCommand,
+	
 	
 	AddProductCommand,
 	AddFavoriteCommand,
@@ -30,11 +31,13 @@ public enum CommandEnum {
 	
 	
 	GetProductCommand,
-	GetFavoriteByUserCommand,
-	GetOrderedByUserCommand,
-	GetReviewByProductCommand,
+	GetProductByCategoryCommand,
+	GetFavoritesByUserCommand,
+	GetOrderesByUserCommand,
+	GetReviewsByProductCommand,
 	GetBasketByUserCommand,
 	GetUserCommand,
+	GetUserByFirebaseCommand
 	
 	
 }

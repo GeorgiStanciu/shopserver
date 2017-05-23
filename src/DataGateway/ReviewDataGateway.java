@@ -49,7 +49,7 @@ public class ReviewDataGateway {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	     
+	  
 	     return -1;
 		
 	}
@@ -79,6 +79,29 @@ public class ReviewDataGateway {
 		}
 		return true;
 	}
+	
+	public int getReviewsCountByProduct(int productId){
+		String query = "SELECT COUNT(*) AS count FROM " +  table + " WHERE product_id = ?";
+		int count = -1;
+		
+		try{
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setInt(1, productId);
+			ResultSet result = preparedStmt.executeQuery();
+			 if(result.next()){
+		 			count = result.getInt("count");
+	 			
+	 			}
+	     		result.close();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return count;
+		
+	}
 
 	public boolean delete(int id) {
 		String query = "DELETE FROM "+ table + " WHERE id = ?";
@@ -107,7 +130,7 @@ public class ReviewDataGateway {
 				int id = result.getInt("id");
 				String title = result.getString("title");
 				String review = result.getString("review");
-				java.util.Date date = result.getDate("date");
+				Date date = result.getDate("date");
 				int qualifying = result.getInt("qualifying");
      			int userId = result.getInt("user_id");
      			int productId = result.getInt("product_id");
@@ -134,7 +157,7 @@ public class ReviewDataGateway {
 				int id = result.getInt("id");
 				String title = result.getString("title");
 				String review = result.getString("review");
-				java.util.Date date = result.getDate("date");
+				Date date = result.getDate("date");
 				int qualifying = result.getInt("qualifying");
      			int userId = result.getInt("user_id");
      		
@@ -171,7 +194,7 @@ public class ReviewDataGateway {
 	 			
 	 				String title = result.getString("title");
 	 				String reviewText = result.getString("review");
-	 				java.util.Date date = result.getDate("date");
+	 				Date date = result.getDate("date");
 	 				int qualifying = result.getInt("qualifying");
 	      			int userId = result.getInt("user_id");
 	      			int productId = result.getInt("product_id");
@@ -186,5 +209,15 @@ public class ReviewDataGateway {
 	            e.printStackTrace();
 	        }
 		return review;
+	}
+	
+	public void close(){
+		
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

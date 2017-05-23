@@ -174,4 +174,14 @@ public class ShoppingBasketDataGateway {
 	        }
 		return basket;
 	}
+	
+	public void close(){
+		
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

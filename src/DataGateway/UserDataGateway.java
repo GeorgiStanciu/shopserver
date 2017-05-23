@@ -27,7 +27,7 @@ public class UserDataGateway {
 	public int add(UserModel user) {
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (name, email, address, birth_date, picture, phone,"
-		 		+ "card_number, sex) VALUES (?,?,?,?,?,?,?,?)";
+		 		+ "card_number, sex, user_firebase) VALUES (?,?,?,?,?,?,?,?,?)";
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setString(1, user.getName());
@@ -41,6 +41,7 @@ public class UserDataGateway {
 		     preparedStmt.setString(6, user.getPhone());
 		     preparedStmt.setString(7, user.getCardNumber());
 		     preparedStmt.setString(8, user.getSex());
+		     preparedStmt.setString(9, user.getFirebaseId());
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
@@ -152,5 +153,43 @@ public class UserDataGateway {
 	            e.printStackTrace();
 	        }
 		return user;
+	}
+	
+	public UserModel findByFirebaseId(String firebaseId) {
+
+		String query = "SELECT * FROM " + table + " WHERE user_firebase = ?";
+		UserModel user = null;
+		   try  {
+	        	 PreparedStatement preparedStmt = conn.prepareStatement(query);
+	        	 preparedStmt.setString(1, firebaseId);
+	        	 ResultSet result = preparedStmt.executeQuery();
+	        	 if(result.next()){
+	 					int id = result.getInt("id");
+	        			String name = result.getString("name");
+	    				String email = result.getString("email");
+	    				String address = result.getString("address");
+	    				java.util.Date birthDate = result.getDate("birth_date");
+	    				String picture = result.getString("picture");
+	    				String phone = result.getString("phone");
+	    				String cardNumber = result.getString("card_number");
+	    				String sex = result.getString("sex");
+	         			user = new UserModel(id, name,email, address, birthDate, picture, phone, cardNumber, sex);
+	     		}
+	     		result.close();
+	 
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		return user;
+	}
+	
+	public void close(){
+		
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

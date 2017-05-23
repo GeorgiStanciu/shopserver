@@ -7,16 +7,16 @@ import com.google.gson.Gson;
 
 import CommandResponses.CommandResponse;
 import Commands.Command;
-import DataGateway.ReviewDataGateway;
-import Models.ReviewModel;
+import DataGateway.ProductDataGateway;
 
-public class UpdateReviewCommandHandler {
+public class GetProductsByCategoryCommandHandler {
 
-	public void updateReviewCommandHandler(ObjectOutputStream os, Command command) throws IOException {
+	
+	public void getProductsByCategoryCommandHandler(ObjectOutputStream os, Command command) throws IOException {
 
-		ReviewDataGateway gateway = new ReviewDataGateway();
+		ProductDataGateway gateway = new ProductDataGateway();
 		CommandResponse response = new CommandResponse();
-		response.setResponse(gateway.update((ReviewModel) command.getObject()));
+		response.setResponse(gateway.findAllByCategory((String)command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
         gateway.close();

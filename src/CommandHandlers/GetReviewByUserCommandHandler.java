@@ -18,5 +18,6 @@ public class GetReviewByUserCommandHandler {
 		response.setResponse(gateway.findById(( (int) command.getObject())));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

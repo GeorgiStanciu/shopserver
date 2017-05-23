@@ -18,5 +18,6 @@ public class GetBasketByUserCommandHandler {
 		response.setResponse(gateway.findByUserId((int) command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

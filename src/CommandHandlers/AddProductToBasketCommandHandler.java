@@ -20,5 +20,6 @@ public class AddProductToBasketCommandHandler {
 		response.setResponse(gateway.add((ProductBasket) command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
 	}
 }

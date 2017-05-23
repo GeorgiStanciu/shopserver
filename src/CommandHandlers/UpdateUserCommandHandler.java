@@ -18,5 +18,6 @@ public class UpdateUserCommandHandler {
 		response.setResponse(gateway.update((UserModel) command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

@@ -13,6 +13,7 @@ public static void main(String[] args){
 		
 		try {
 			server = new ServerSocket(9982);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -21,7 +22,8 @@ public static void main(String[] args){
 		try{
 			while(true){
 				client = server.accept();
-				ServerProcessRunner spr = new ServerProcessRunner(server, client);
+				
+				ServerProcessRunner spr = new ServerProcessRunner(client);
 				spr.start();
 			}
 			

@@ -20,5 +20,6 @@ public class AddOrderedCommandHandler {
 		response.setResponse(gateway.add((OrderModel) command.getObject()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

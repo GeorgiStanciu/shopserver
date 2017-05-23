@@ -19,5 +19,6 @@ public class ViewOrderedCommandHandler {
 		response.setResponse(gateway.findAll());
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
+        gateway.close();
     }
 }

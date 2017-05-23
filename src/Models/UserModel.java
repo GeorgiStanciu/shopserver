@@ -6,6 +6,7 @@ import java.util.Date;
 public class UserModel implements Serializable {
 
     private int id;
+    private String firebaseId;
     private String name;
     private String email;
     private String address;
@@ -20,9 +21,9 @@ public class UserModel implements Serializable {
         this.email = "";
         this.id = 0;
     }
-    public UserModel(String email, int id, String name){
+    public UserModel(String email, String firebaseId, String name){
         this.email = email;
-        this.id  = id;
+        this.firebaseId = firebaseId;
         this.name = name;
         this.address = "";
 		this.birthDate = null;
@@ -147,4 +148,12 @@ public class UserModel implements Serializable {
     public void setSex(String sex) {
         this.sex = sex;
     }
+	public String getFirebaseId() {
+		return firebaseId;
+	}
+	public void setFirebaseId(String firebaseId) {
+		this.firebaseId = firebaseId;
+	}
+    
+    
 }

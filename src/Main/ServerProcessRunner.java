@@ -19,11 +19,11 @@ import com.google.gson.JsonPrimitive;
 
 import CommandHandlers.*;
 import Commands.Command;
+import Commands.DeserializateCommand;
 import Models.*;
 
 public class ServerProcessRunner implements Runnable{
 	private Thread t;
-	private ServerSocket server;
 	private Socket client;
     
     private AddBasketCommandHandler addBasketCommandHandler;
@@ -40,6 +40,9 @@ public class ServerProcessRunner implements Runnable{
     private GetProductCommandHandler getProductCommandHandler;
     private GetReviewByUserCommandHandler getReviewByUserCommandHandler;
     private GetUserCommandHandler getUserCommandHandler;
+    private GetProductsByCategoryCommandHandler getProductsByCategoryCommandHandler;
+    private GetUserByFirebaseCommandHandler getUserByFirebaseCommandHandler;
+    
     
     private RemoveFavoriteCommandHandler removeFavoriteCommandHandler;
     private RemoveProductCommandHandler removeProductCommandHandler;
@@ -60,9 +63,8 @@ public class ServerProcessRunner implements Runnable{
     private ViewUsersCommandHandler viewUsersCommandHandler;
    
     
-	public ServerProcessRunner(ServerSocket server,Socket client){
+	public ServerProcessRunner(Socket client){
 		this.client = client;
-		this.server = server;
 		
 		addBasketCommandHandler = new AddBasketCommandHandler();
 	    addFavoriteCommandHandler = new AddFavoriteCommandHandler();
@@ -78,6 +80,9 @@ public class ServerProcessRunner implements Runnable{
 	    getProductCommandHandler = new GetProductCommandHandler();
 	    getReviewByUserCommandHandler = new GetReviewByUserCommandHandler();
 	    getUserCommandHandler = new GetUserCommandHandler();
+	    getProductsByCategoryCommandHandler = new GetProductsByCategoryCommandHandler();
+	    getUserByFirebaseCommandHandler = new GetUserByFirebaseCommandHandler();
+	    
 	    
 	    removeFavoriteCommandHandler = new RemoveFavoriteCommandHandler();
 	    removeProductCommandHandler = new RemoveProductCommandHandler();
@@ -101,25 +106,18 @@ public class ServerProcessRunner implements Runnable{
 	public void run() {
 		ObjectOutputStream os  = null;
 		ObjectInputStream ois = null;
+		BufferedReader in = null;
 		try {
             os = new ObjectOutputStream(client.getOutputStream());
             ois = new ObjectInputStream(client.getInputStream());
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-            		client.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-            System.out.println("Server started");
             while (in!= null) {
             	if(in.ready()){
             	String json = (String) ois.readObject();
-            	JsonObject jsonObject = (JsonObject)(new JsonParser()).parse(json);
-            	JsonPrimitive jsonCommand = (JsonPrimitive) jsonObject.get("command");
-            	Gson gson = new GsonBuilder().create();
-            	CommandEnum operationId = gson.fromJson(jsonCommand, CommandEnum.class);
-            	
-            	
-                //Command command =  new Gson().fromJson(json, Command.class);
-            	Command command = new Command(operationId);
-               // CommandEnum operationId = command.getCommand();
+            
+            	Command command = new DeserializateCommand(json).getCommand();
+                CommandEnum operationId = command.getCommand();
                 switch(operationId) {
                 	case AddBasketCommand:
                 		addBasketCommandHandler.addBasketCommandHandler(os, command);
@@ -131,9 +129,6 @@ public class ServerProcessRunner implements Runnable{
                 		addOrderedCommandHandler.addOrderCommandHandler(os, command);
                 		break;
                 	case AddProductCommand:
-                    	JsonObject jsonObj = (JsonObject) jsonObject.get("object");
-                		Object obj = gson.fromJson(jsonObj, Product.class);
-                		command.setObject(obj);
                 		addProductCommandHandler.addProductCommandHandler(os, command);
                 		break;
                 	case AddReviewCommand:
@@ -149,20 +144,26 @@ public class ServerProcessRunner implements Runnable{
                 	case GetBasketByUserCommand:
                 		getBasketByUserCommandHandler.getBasketCommandHandler(os, command);
                 		break;
-                	case GetFavoriteByUserCommand:
+                	case GetFavoritesByUserCommand:
                 		getFavoriteByUserCommandHandler.getFavoriteCommandHandler(os, command);
                 		break;
-                	case GetOrderedByUserCommand:
+                	case GetOrderesByUserCommand:
                 		getOrderedByUserCommand.getOrderCommandHandler(os, command);
                 		break;
                 	case GetProductCommand:
                 		getProductCommandHandler.getProductCommandHandler(os, command);
                 		break;
-                	case GetReviewByProductCommand:
+                	case GetReviewsByProductCommand:
                 		getReviewByUserCommandHandler.getReviewCommandHandler(os, command);
                 		break;
                 	case GetUserCommand:
                 		getUserCommandHandler.getUserCommandHandler(os, command);
+                		break;
+                	case GetProductByCategoryCommand:
+                		getProductsByCategoryCommandHandler.getProductsByCategoryCommandHandler(os, command);
+                		break;
+                	case GetUserByFirebaseCommand:
+                		getUserByFirebaseCommandHandler.getUserCommandHandler(os, command);
                 		break;
                 		
                 	case RemoveFavoriteCommand:
@@ -182,7 +183,7 @@ public class ServerProcessRunner implements Runnable{
                 		updateBasketCommandHandler.updateBasketCommandHandler(os, command);
                 		break;
                 	case UpdateFavoriteCommand:
-                		//updateFavoriteCommandHandler;
+                		updateFavoriteCommandHandler.updateFavoriteCommandHandler(os, command);
                 		break;
                 	case UpdateProductCommand:
                 		updateProductCommandHandler.updateProductCommandHandler(os, command);
@@ -194,21 +195,29 @@ public class ServerProcessRunner implements Runnable{
                 		updateUserCommandHandler.updateUserCommandHandler(os, command);
                 		break;
                 	
-                	case ViewCategoryCommandByParent:
+                	case ViewCategoriesCommandByParent:
                 		viewCategoryByParentCommandHandler.viewCategoriesCommandHandler(os, command);
                 		break;
-                	case ViewOrderedCommand:
+                	case ViewOrderesCommand:
                 		viewOrderedCommandHandler.viewOrdersCommandHandler(os, command);
                 		break;
-                	case ViewProductCommand:
+                	case ViewProductsCommand:
                 		viewProductsCommandHandler.viewProductsCommandHandler(os, command);
                 		break;
-                	case ViewUserCommand:
+                	case ViewUsersCommand:
                 		viewUsersCommandHandler.viewUsersCommandHandler(os, command);
                 		break;
                 	default:
                 }
-                
+               
+                if(os != null)
+					 os.close();
+				 if(ois != null)
+					 ois.close();
+	             if(in != null)
+	            	 in.close();
+	             in = null;
+	             client.close();
             }
             	
             	
@@ -218,6 +227,8 @@ public class ServerProcessRunner implements Runnable{
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+			
+		
 		
 		
 	}
