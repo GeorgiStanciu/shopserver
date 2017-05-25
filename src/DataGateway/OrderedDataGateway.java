@@ -134,15 +134,15 @@ public class OrderedDataGateway {
 	
 	
 	
-	public OrderModel findByUserId(int userId) {
+	public ArrayList<OrderModel> findByUserId(int userId) {
 
-		String query = "SELECT * FROM " + table + " WHERE user)id = ?";
-		OrderModel order = null;
+		String query = "SELECT * FROM " + table + " WHERE user_id = ?";
+		ArrayList<OrderModel> orders = new ArrayList();
 		   try  {
 	        	 PreparedStatement preparedStmt = conn.prepareStatement(query);
 	        	 preparedStmt.setInt(1, userId);
 	        	 ResultSet result = preparedStmt.executeQuery();
-	        	 if(result.next()){
+	        	 while(result.next()){
 	 				int id = result.getInt("id");
 	 				float cost = result.getFloat("cost");   
 	 				java.util.Date date = result.getDate("date");
@@ -152,18 +152,18 @@ public class OrderedDataGateway {
 	 				ArrayList<Product> products = new ArrayList<>();
 	 				ArrayList<Integer> quanities = new ArrayList<>();
 	 				
-	 				for(int i = 0; i <= orderedProducts.size(); i++){
+	 				for(int i = 0; i < orderedProducts.size(); i++){
 	 					products.add(orderedProducts.get(i).getProduct());
 	 					quanities.add(orderedProducts.get(i).getQuantity());
 	 				}
-	      			order = new OrderModel(id, user, products, quanities, date, cost);
+	      			orders.add(new OrderModel(id, user, products, quanities, date, cost));
 	 			}
 	     		result.close();
 	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
-		return order;
+		return orders;
 	}
 	
 	public void close(){

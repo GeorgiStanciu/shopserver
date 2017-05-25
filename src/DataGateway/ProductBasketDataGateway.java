@@ -49,7 +49,7 @@ public class ProductBasketDataGateway {
 
 	public boolean update(ProductBasket productBasket) {
 
-		String query = "UPDATE " + table + " set basket_id = ?, product_id= ?, quantity where id = ?";
+		String query = "UPDATE " + table + " set basket_id = ?, product_id= ?, quantity = ? where id = ?";
 	    PreparedStatement preparedStmt;
 		try {
 			preparedStmt = conn.prepareStatement(query);
@@ -123,6 +123,30 @@ public class ProductBasketDataGateway {
 			e.printStackTrace();
 		} 
 		return productBaskets;
+	}
+	
+
+
+	public ProductBasket findAllByShoppingBasketAndProduct(int basketId, int productId) {
+		String query = "SELECT * FROM " + table + " WHERE basket_id = ? AND product_id = ?";
+		ProductBasket productBasket = null;
+		try{
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setInt(1, basketId);
+			preparedStmt.setInt(2, productId);
+			ResultSet result = preparedStmt.executeQuery();
+			if(result.next()){
+				int id = result.getInt("id");
+     			int quantity = result.getInt("quantity");
+				Product product = new ProductDataGateway().findById(productId);
+
+     			productBasket = new ProductBasket(id, basketId, productId, quantity, product);
+     					}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return productBasket;
 	}
 	
 

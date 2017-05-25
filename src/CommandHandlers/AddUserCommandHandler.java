@@ -7,7 +7,9 @@ import com.google.gson.Gson;
 
 import CommandResponses.CommandResponse;
 import Commands.Command;
+import DataGateway.ShoppingBasketDataGateway;
 import DataGateway.UserDataGateway;
+import Models.ShoppingBasket;
 import Models.UserModel;
 
 public class AddUserCommandHandler {
@@ -23,6 +25,10 @@ public class AddUserCommandHandler {
 			response.setResponse(gateway.add(user));
 			String gson = new Gson().toJson(response);
 	        os.writeObject(gson);
+	        
+	        ShoppingBasketDataGateway basketGateway = new ShoppingBasketDataGateway();
+	        ShoppingBasket basket = new ShoppingBasket(isUser);
+	        basketGateway.add(basket);
 		}
 		else{
 		response.setResponse(isUser.getId());

@@ -22,6 +22,10 @@ public class ShoppingBasket implements Serializable{
         this.products = products;
         this.productsNumber = productsNumber;
     }
+    
+    public ShoppingBasket(UserModel user) {
+        this.user = user;
+    }
 
     
     public int getId() {

@@ -1,10 +1,8 @@
 package Commands;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+
+import com.google.gson.*;
+import com.google.gson.internal.bind.*;
 
 import CommandHandlers.ViewCategoryByParentCommandHandler;
 import CommandHandlers.ViewOrderedCommandHandler;
@@ -27,8 +25,10 @@ public class DeserializateCommand {
 		
 		JsonObject jsonObject = (JsonObject)(new JsonParser()).parse(json);
     	JsonPrimitive jsonCommand = (JsonPrimitive) jsonObject.get("command");
-    	Gson gson = new GsonBuilder().registerTypeAdapter(java.sql.Date.class, new JsonDateDeserializer())
-                .create();
+    	SqlDateTypeAdapter adapter = new SqlDateTypeAdapter();
+    	Gson gson = new GsonBuilder().registerTypeAdapter(java.sql.Date.class, adapter).setDateFormat("MMM dd, yyyy").create();
+   	
+    	//Gson gson = new GsonBuilder().registerTypeAdapter(java.sql.Date.class, new JsonDateDeserializer()).create();
     	CommandEnum operationId = gson.fromJson(jsonCommand, CommandEnum.class);
 		
 		Command command = new Command(operationId);
@@ -40,7 +40,7 @@ public class DeserializateCommand {
     		command.setObject(obj);
 		}
 		
-		else if(operationId == CommandEnum.AddFavoriteCommand || operationId == CommandEnum.UpdateFavoriteCommand){
+		else if(operationId == CommandEnum.AddFavoriteCommand || operationId == CommandEnum.UpdateFavoriteCommand || operationId == CommandEnum.GetIsFavoriteProductCommand || operationId == CommandEnum.RemoveFavoriteCommand){
 					
 					JsonObject jsonObj = (JsonObject) jsonObject.get("object");
 		    		Object obj = gson.fromJson(jsonObj, FavoriteProduct.class);
@@ -68,7 +68,7 @@ public class DeserializateCommand {
 			command.setObject(obj);
 		}
 		
-		else if(operationId == CommandEnum.AddProductToBasketCommand){
+		else if(operationId == CommandEnum.AddProductToBasketCommand || operationId == CommandEnum.RemoveProductFromBasketCommand){
 			
 			JsonObject jsonObj = (JsonObject) jsonObject.get("object");
 			Object obj = gson.fromJson(jsonObj, ProductBasket.class);

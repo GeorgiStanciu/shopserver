@@ -17,9 +17,19 @@ public class AddProductToBasketCommandHandler {
 		
 		ProductBasketDataGateway gateway = new ProductBasketDataGateway();
 		CommandResponse response = new CommandResponse();
-		response.setResponse(gateway.add((ProductBasket) command.getObject()));
+		ProductBasket productBasket = (ProductBasket) command.getObject();
+		ProductBasket existProduct = gateway.findAllByShoppingBasketAndProduct(productBasket.getBasketId(), productBasket.getProductId());
+		if(existProduct == null){
+			response.setResponse(gateway.add((ProductBasket) command.getObject()));
+			
+		}
+		else{
+			
+			existProduct.setQuantity(existProduct.getQuantity() + productBasket.getQuantity());
+			response.setResponse(gateway.update(existProduct));
+		}
 		String gson = new Gson().toJson(response);
-        os.writeObject(gson);
+		os.writeObject(gson);
         gateway.close();
 	}
 }

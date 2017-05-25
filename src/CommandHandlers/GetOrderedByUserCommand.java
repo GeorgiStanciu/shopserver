@@ -15,7 +15,8 @@ public class GetOrderedByUserCommand {
 
 		OrderedDataGateway gateway = new OrderedDataGateway();
 		CommandResponse response = new CommandResponse();
-		response.setResponse(gateway.findByUserId( (int) command.getObject()));
+		int userId = (int) command.getObject();
+		response.setResponse(gateway.findByUserId(userId));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
         gateway.close();

@@ -17,9 +17,16 @@ public class AddFavoriteCommandHandler {
 
 		FavoriteProductsDataGateway gateway = new FavoriteProductsDataGateway();
 		CommandResponse response = new CommandResponse();
-		response.setResponse(gateway.add((FavoriteProduct) command.getObject()));
+		FavoriteProduct favoriteProduct = (FavoriteProduct) command.getObject();
+		if(gateway.findByUserIdAndProduct(favoriteProduct.getUser().getId(), favoriteProduct.getProduct().getId()) == false){
+			response.setResponse(gateway.add((FavoriteProduct) command.getObject()));
+		
+		}
+		else{
+			response.setResponse(true);
+		}
 		String gson = new Gson().toJson(response);
-        os.writeObject(gson);
+		os.writeObject(gson);
         gateway.close();
     }
 }

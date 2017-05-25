@@ -125,7 +125,44 @@ public class FavoriteProductsDataGateway {
 	}
 	
 
-
+	public boolean findByUserIdAndProduct(int userId, int productId) {
+		String query = "SELECT * FROM " + table + " WHERE user_id = ? AND product_id = ?";
+		boolean isFavorite = false;;
+		try{
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setInt(1, userId);
+			preparedStmt.setInt(2, productId);
+			ResultSet result = preparedStmt.executeQuery();
+			if(result.next()){
+			
+				isFavorite = true;
+     		}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return isFavorite;
+	}
+	
+	public int findIdByUserAndProduct(int userId, int productId) {
+		String query = "SELECT * FROM " + table + " WHERE user_id = ? AND product_id = ?";
+		int id = 0;;
+		try{
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setInt(1, userId);
+			preparedStmt.setInt(2, productId);
+			ResultSet result = preparedStmt.executeQuery();
+			if(result.next()){
+			
+				id = result.getInt("id");
+     		}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return id;
+	}
+	
 
 	public FavoriteProduct findById(int id) {
 
