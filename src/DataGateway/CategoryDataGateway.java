@@ -14,18 +14,16 @@ public class CategoryDataGateway {
 
 	private Connection conn;
 	private final String table = "category";
-	public CategoryDataGateway(){
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public CategoryDataGateway(Connection conn){
+		this.conn = conn;
+
 
 	}
 	
 	public int add(Category category) {
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (name, parent, icon) VALUES (?,?,?)";
+		 int id = -1;
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setString(1, category.getName());
@@ -34,14 +32,16 @@ public class CategoryDataGateway {
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
-		    	 return result.getInt(1);
+		    	 id =  result.getInt(1);
 		     }
+		     result.close();
+		     preparedStmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	     
-	     return -1;
+	     return id;
 		
 	}
 
@@ -59,7 +59,8 @@ public class CategoryDataGateway {
 				String icon = result.getString("icon");
 				categories.add(new Category(id, name, parent, icon));
 			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -72,14 +73,16 @@ public class CategoryDataGateway {
 		try{
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setString(1, parent);
-			ResultSet result = preparedStmt.executeQuery(query);
+			ResultSet result = preparedStmt.executeQuery();
 			while(result.next()){
 				int id = result.getInt("id");
 				String name = result.getString("name");
 				String icon = result.getString("icon");
 				categories.add(new Category(id, name, parent, icon));
 			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -101,7 +104,9 @@ public class CategoryDataGateway {
 	 				category = new Category(id, name, parent, icon);
 	      				
 	     		}
-	     		result.close();
+	             result.close();
+			     preparedStmt.close();
+			     
 	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
@@ -125,7 +130,8 @@ public class CategoryDataGateway {
 	 				category = new Category(id, name, parent, icon);
 	      				
 	     		}
-	     		result.close();
+	             result.close();
+			     preparedStmt.close();
 	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
@@ -133,13 +139,4 @@ public class CategoryDataGateway {
 		return category;
 	}
 	
-	public void close(){
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

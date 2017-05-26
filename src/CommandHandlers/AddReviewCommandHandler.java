@@ -2,6 +2,7 @@ package CommandHandlers;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.sql.Connection;
 
 import com.google.gson.Gson;
 
@@ -15,9 +16,9 @@ import Models.ReviewModel;
 
 public class AddReviewCommandHandler {
 
-	public void addReviewCommandHandler(ObjectOutputStream os, Command command) throws IOException {
+	public void addReviewCommandHandler(ObjectOutputStream os, Command command, Connection conn) throws IOException {
 
-		ReviewDataGateway gateway = new ReviewDataGateway();
+		ReviewDataGateway gateway = new ReviewDataGateway(conn);
 		CommandResponse response = new CommandResponse();
 		ReviewModel review = (ReviewModel) command.getObject();
 		response.setResponse(gateway.add(review));
@@ -25,14 +26,12 @@ public class AddReviewCommandHandler {
         os.writeObject(gson);
         if((int) response.getResponse() != -1){
         	int count = gateway.getReviewsCountByProduct(review.getProductId());
-        	ProductDataGateway productDataGateway = new ProductDataGateway();
+        	ProductDataGateway productDataGateway = new ProductDataGateway(conn);
         	Product product = productDataGateway.findById(review.getProductId());
         	float rating = ((product.getRating() * (count - 1) + review.getQualifying())) / count;
         	productDataGateway.updateRating(product.getId(), rating);
-        	productDataGateway.close();
         }
-        gateway.close();
-    }
-	
-	
+    
+	}
+
 }

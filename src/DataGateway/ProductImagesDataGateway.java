@@ -15,33 +15,32 @@ public class ProductImagesDataGateway {
 
 	private Connection conn;
 	private final String table = "product_images";
-	public ProductImagesDataGateway(){
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
+	public ProductImagesDataGateway(Connection conn){
+		this.conn = conn;
 	}
 	
 	public int add(ProductImages image) {
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (product_id, picture) VALUES (?,?)";
-	     try {
+	     int id = -1;
+		 try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setInt(1, image.getProductId());
 			 preparedStmt.setString(2, image.getPicture());
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
-		    	 return result.getInt(1);
+		    	 id = result.getInt(1);
 		     }
+		     result.close();
+		     preparedStmt.close();
+		    
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	     
-	     return -1;
+	     return id;
 		
 	}
 
@@ -56,6 +55,7 @@ public class ProductImagesDataGateway {
 			 preparedStmt.setString(2, image.getPicture());
 			 preparedStmt.setInt(3, image.getId());
 		     preparedStmt.executeUpdate();
+		     preparedStmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -70,7 +70,7 @@ public class ProductImagesDataGateway {
         	 PreparedStatement preparedStmt = conn.prepareStatement(query);
         	 preparedStmt.setInt(1, id);
         	 preparedStmt.executeUpdate();
- 
+		     preparedStmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -94,7 +94,8 @@ public class ProductImagesDataGateway {
      			
      			images.add(new ProductImages(id, productId, picture));
 			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -113,16 +114,12 @@ public class ProductImagesDataGateway {
 				String picture = result.getString("picture");
      			images.add(new ProductImages(id, productId, picture));
      					}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		return images;
 	}
 	
@@ -145,22 +142,14 @@ public class ProductImagesDataGateway {
 	      			image = new ProductImages(id, productId, picture);
 
 	 			}
-	     		result.close();
+	             result.close();
+			     preparedStmt.close();
 	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
 		return image;
 	}
-
-	public void close(){
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	
 }

@@ -84,7 +84,7 @@ public class MainTest {
 //		}
 		
 		
-		ProductDataGateway productGateway = new ProductDataGateway();
+		//ProductDataGateway productGateway = new ProductDataGateway();
 		ArrayList<Product> products = new ArrayList();
 		ArrayList<String> images;
 

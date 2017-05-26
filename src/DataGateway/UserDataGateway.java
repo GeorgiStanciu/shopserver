@@ -15,19 +15,15 @@ public class UserDataGateway {
 
 	private Connection conn;
 	private final String table = "user";
-	public UserDataGateway(){
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
+	public UserDataGateway(Connection conn){
+		this.conn = conn;
 	}
 	
 	public int add(UserModel user) {
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (name, email, address, birth_date, picture, phone,"
 		 		+ "card_number, sex, user_firebase) VALUES (?,?,?,?,?,?,?,?,?)";
+		 int id = -1;
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setString(1, user.getName());
@@ -45,14 +41,17 @@ public class UserDataGateway {
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
-		    	 return result.getInt(1);
+		    	 id =  result.getInt(1);
 		     }
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	     
-	     return -1;
+	     return id;
 		
 	}
 
@@ -77,6 +76,8 @@ public class UserDataGateway {
 		     preparedStmt.setString(8, user.getSex());
 		     preparedStmt.setInt(9,  user.getId());
 		     preparedStmt.executeUpdate();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -91,7 +92,8 @@ public class UserDataGateway {
         	 PreparedStatement preparedStmt = conn.prepareStatement(query);
         	 preparedStmt.setInt(1, id);
         	 preparedStmt.executeUpdate();
- 
+		     preparedStmt.close();
+		     
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -118,8 +120,9 @@ public class UserDataGateway {
 				String sex = result.getString("sex");
      			users.add(new UserModel(id, name,email, address, birthDate, picture, phone, cardNumber, sex));
 			}
-			result.close();
-		} catch (SQLException e) {
+		     result.close();
+		     preparedStmt.close();
+		     		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
 		return users;
@@ -147,8 +150,9 @@ public class UserDataGateway {
 	    				String sex = result.getString("sex");
 	         			user = new UserModel(id, name,email, address, birthDate, picture, phone, cardNumber, sex);
 	     		}
-	     		result.close();
-	 
+	             result.close();
+			     preparedStmt.close();
+			     	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
@@ -175,21 +179,15 @@ public class UserDataGateway {
 	    				String sex = result.getString("sex");
 	         			user = new UserModel(id, name,email, address, birthDate, picture, phone, cardNumber, sex);
 	     		}
-	     		result.close();
-	 
+	             result.close();
+			     preparedStmt.close();
+			     	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
 		return user;
 	}
 	
-	public void close(){
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
+	
 }

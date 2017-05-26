@@ -15,18 +15,17 @@ public class OrderedProductDataGateway {
 	
 	private Connection conn;
 	private final String table = "ordered_products";
-	public OrderedProductDataGateway(){
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public OrderedProductDataGateway(Connection conn){
+		this.conn = conn;
 
 	}
 	
+
 	public int add(OrderedProduct orderedProduct) {
+		
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (order_id, product_id, product_quantity, cost) VALUES (?,?,?,?)";
+		 int id = -1;
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setInt(1, orderedProduct.getOrderId());
@@ -36,20 +35,25 @@ public class OrderedProductDataGateway {
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
-		    	 return result.getInt(1);
+		    	 id =  result.getInt(1);
 		     }
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	     
-	     return -1;
+	     return id;
 		
 	}
 
 
 
 	public ArrayList<OrderedProduct> findAll() {
+		
+
 		String query = "SELECT * FROM " + table;
 		ArrayList<OrderedProduct> orderedProducts = new ArrayList();
 		try{
@@ -62,11 +66,13 @@ public class OrderedProductDataGateway {
 				int quantity = result.getInt("product_quantity");
 				float cost = result.getFloat("cost");   
      			
-				Product product = new ProductDataGateway().findById(productId);
+				Product product = new ProductDataGateway(conn).findById(productId);
 				
      			orderedProducts.add(new OrderedProduct(id, orderedId, productId, quantity, cost, product));
 			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -74,6 +80,8 @@ public class OrderedProductDataGateway {
 	}
 	
 	public ArrayList<OrderedProduct> findAllByOrderId(int orderId) {
+		
+
 		String query = "SELECT * FROM " + table + " WHERE order_id = ?";
 		ArrayList<OrderedProduct> orderedProducts = new ArrayList();
 		try{
@@ -86,10 +94,13 @@ public class OrderedProductDataGateway {
 				int quantity = result.getInt("product_quantity");
 				float cost = result.getFloat("cost");   
      			
-				Product product = new ProductDataGateway().findById(productId);
+				Product product = new ProductDataGateway(conn).findById(productId);
      			orderedProducts.add(new OrderedProduct(id, orderId, productId, quantity, cost, product));
      			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
+		     
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -101,6 +112,7 @@ public class OrderedProductDataGateway {
 
 	public OrderedProduct findById(int id) {
 
+		
 		String query = "SELECT * FROM " + table + " WHERE id = ?";
 		OrderedProduct orderedProduct = null;
 		   try  {
@@ -114,12 +126,14 @@ public class OrderedProductDataGateway {
 	 				int quantity = result.getInt("product_quantity");
 	 				float cost = result.getFloat("cost");   
 	      			
-	 				Product product = new ProductDataGateway().findById(productId);
+	 				Product product = new ProductDataGateway(conn).findById(productId);
 	 				
 	      			orderedProduct = new OrderedProduct(id, orderedId, productId, quantity, cost, product);
 
 	 			}
-	     		result.close();
+	             result.close();
+			     preparedStmt.close();
+			     
 	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
@@ -127,14 +141,6 @@ public class OrderedProductDataGateway {
 		return orderedProduct;
 	}
 	
-	public void close(){
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	
 }

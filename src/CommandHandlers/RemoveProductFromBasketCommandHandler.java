@@ -2,6 +2,7 @@ package CommandHandlers;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.sql.Connection;
 
 import com.google.gson.Gson;
 
@@ -14,15 +15,14 @@ import Models.ProductBasket;
 public class RemoveProductFromBasketCommandHandler {
 
 	
-	public void removeProductFromBasketCommandHandler(ObjectOutputStream os, Command command) throws IOException {
+	public void removeProductFromBasketCommandHandler(ObjectOutputStream os, Command command, Connection conn) throws IOException {
 
-		ProductBasketDataGateway gateway = new ProductBasketDataGateway();
+		ProductBasketDataGateway gateway = new ProductBasketDataGateway(conn);
 		ProductBasket productBasket = (ProductBasket) command.getObject();
 		ProductBasket product = gateway.findAllByShoppingBasketAndProduct(productBasket.getBasketId(), productBasket.getProductId());
 		CommandResponse response = new CommandResponse();
 		response.setResponse(gateway.delete(product.getId()));
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
-        gateway.close();
     }
 }

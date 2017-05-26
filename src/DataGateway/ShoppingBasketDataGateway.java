@@ -16,32 +16,31 @@ public class ShoppingBasketDataGateway {
 
 	private Connection conn;
 	private final String table = "shopping_basket";
-	public ShoppingBasketDataGateway(){
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
+	public ShoppingBasketDataGateway(Connection conn){
+		this.conn = conn;
 	}
 	
 	public int add(ShoppingBasket basket) {
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (user_id) VALUES (?)";
+		 int id = -1;
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setInt(1, basket.getUser().getId());
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
-		    	 return result.getInt(1);
+		    	 id = result.getInt(1);
 		     }
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	     
-	     return -1;
+	     return id;
 		
 	}
 
@@ -55,6 +54,8 @@ public class ShoppingBasketDataGateway {
 		    preparedStmt.setInt(1, basket.getUser().getId());
 			 preparedStmt.setInt(2, basket.getId());
 		     preparedStmt.executeUpdate();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -69,7 +70,8 @@ public class ShoppingBasketDataGateway {
         	 PreparedStatement preparedStmt = conn.prepareStatement(query);
         	 preparedStmt.setInt(1, id);
         	 preparedStmt.executeUpdate();
- 
+		     preparedStmt.close();
+		     
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -88,11 +90,11 @@ public class ShoppingBasketDataGateway {
 				int id = result.getInt("id");
 				int userId = result.getInt("userId");
      			
-				UserModel user = new UserDataGateway().findById(userId);
+				UserModel user = new UserDataGateway(conn).findById(userId);
 				ArrayList<Product> products = new ArrayList<>();
 				ArrayList<Integer> quantities = new ArrayList<>();
      			
-				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway().findAllByShoppingBasket(id);
+				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway(conn).findAllByShoppingBasket(id);
 				for(int i = 0; i < productBaskets.size(); i++){
 					products.add(productBaskets.get(i).getProduct());
 					quantities.add(productBaskets.get(i).getQuantity());
@@ -100,8 +102,9 @@ public class ShoppingBasketDataGateway {
 				
      			baskets.add(new ShoppingBasket(id, user, products, quantities));
 			}
-			result.close();
-		} catch (SQLException e) {
+		     result.close();
+		     preparedStmt.close();
+		     		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
 		return baskets;
@@ -121,11 +124,11 @@ public class ShoppingBasketDataGateway {
 	        	 if(result.next()){
 	 				int userId = result.getInt("user_id");
 	      			
-	 				UserModel user = new UserDataGateway().findById(userId);
+	 				UserModel user = new UserDataGateway(conn).findById(userId);
 	 				ArrayList<Product> products = new ArrayList<>();
 	 				ArrayList<Integer> quantities = new ArrayList<>();
 	      			
-	 				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway().findAllByShoppingBasket(id);
+	 				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway(conn).findAllByShoppingBasket(id);
 	 				for(int i = 0; i < productBaskets.size(); i++){
 	 					products.add(productBaskets.get(i).getProduct());
 	 					quantities.add(productBaskets.get(i).getQuantity());
@@ -134,8 +137,9 @@ public class ShoppingBasketDataGateway {
 	      			basket= new ShoppingBasket(id, user, products, quantities);
 
 	 			}
-	     		result.close();
-	 
+	             result.close();
+			     preparedStmt.close();
+			     	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
@@ -154,11 +158,11 @@ public class ShoppingBasketDataGateway {
 	        	 ResultSet result = preparedStmt.executeQuery();
 	        	 if(result.next()){
 	 				int id = result.getInt("id");
-	 				UserModel user = new UserDataGateway().findById(userId);
+	 				UserModel user = new UserDataGateway(conn).findById(userId);
 	 				ArrayList<Product> products = new ArrayList<>();
 	 				ArrayList<Integer> quantities = new ArrayList<>();
 	      			
-	 				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway().findAllByShoppingBasket(id);
+	 				ArrayList<ProductBasket> productBaskets = new ProductBasketDataGateway(conn).findAllByShoppingBasket(id);
 	 				for(int i = 0; i < productBaskets.size(); i++){
 	 					products.add(productBaskets.get(i).getProduct());
 	 					quantities.add(productBaskets.get(i).getQuantity());
@@ -167,21 +171,14 @@ public class ShoppingBasketDataGateway {
 	      			basket= new ShoppingBasket(id, user, products, quantities);
 
 	 			}
-	     		result.close();
-	 
+	             result.close();
+			     preparedStmt.close();
+			     	 
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
 		return basket;
 	}
+
 	
-	public void close(){
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

@@ -13,24 +13,23 @@ public class ProductDataGateway {
 
 	private Connection conn;
 	private final String table = "product";
-	public ProductDataGateway(){
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
+	public ProductDataGateway(Connection conn){
+		this.conn = conn;
 	}
 	
+	
 	public int add(Product product) {
+		
+		
 	    String[] returnId = {"id" };
 		 String query = "INSERT INTO " + table + " (name, description, category, discount, seller,"
 		 		+ "guarantee, quantity,  price, rating) VALUES (?,?,?,?,?,?,?,?,?)";
+		 int id = -1;
 	     try {
 		     PreparedStatement preparedStmt = conn.prepareStatement(query, returnId);
 		     preparedStmt.setString(1, product.getName());
 			 preparedStmt.setString(2, product.getDescription());
-			 Category category = new CategoryDataGateway().findByName(product.getCategory());
+			 Category category = new CategoryDataGateway(conn).findByName(product.getCategory());
 		     preparedStmt.setInt(3, category.getId());
 		     preparedStmt.setInt(4, product.getDiscount());
 		     preparedStmt.setString(5, product.getSeller());
@@ -42,26 +41,30 @@ public class ProductDataGateway {
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
 		    	 if(product.getImages() != null && product.getImages().size() >0){
-		    		 ProductImagesDataGateway imageGateway = new ProductImagesDataGateway();
+		    		 ProductImagesDataGateway imageGateway = new ProductImagesDataGateway(conn);
 		    		 for(int i = 0; i < product.getImages().size(); i++){
 		    			 ProductImages image = new ProductImages(result.getInt(1), product.getImages().get(i));
 		    			 imageGateway.add(image);
 		    		 }
 		    	 }
-		    	 return result.getInt(1);
+		    	 id =  result.getInt(1);
 		     }
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	     
-	     return -1;
+	     return id;
 		
 	}
 
 
 	public boolean update(Product product) {
-
+		
+		
 		String query = "UPDATE " + table + " set name = ?, description = ?, category = ?,"
 				+ "discount = ?, seller = ?, guarantee = ?, quantity = ?, price = ?, rating = ? where id = ?";
 	    PreparedStatement preparedStmt;
@@ -69,7 +72,7 @@ public class ProductDataGateway {
 			 preparedStmt = conn.prepareStatement(query);
 			 preparedStmt.setString(1, product.getName());
 			 preparedStmt.setString(2, product.getDescription());
-			 Category category = new CategoryDataGateway().findByName(product.getCategory());
+			 Category category = new CategoryDataGateway(conn).findByName(product.getCategory());
 		     preparedStmt.setInt(3, category.getId());
 		     preparedStmt.setInt(4, product.getDiscount());
 		     preparedStmt.setString(5, product.getSeller());
@@ -79,6 +82,8 @@ public class ProductDataGateway {
 		     preparedStmt.setFloat(9, product.getRating());
 		     preparedStmt.setInt(10,  product.getId());
 		     preparedStmt.executeUpdate();
+		     preparedStmt.close();
+		     
 		    
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -89,7 +94,8 @@ public class ProductDataGateway {
 	
 	
 	public boolean updateRating(int productId, float rating) {
-
+		
+		
 		String query = "UPDATE " + table + " set rating = ? where id = ?";
 	    PreparedStatement preparedStmt;
 		try {
@@ -97,7 +103,8 @@ public class ProductDataGateway {
 		     preparedStmt.setFloat(1, rating);
 		     preparedStmt.setInt(2,  productId);
 		     preparedStmt.executeUpdate();
-		    
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -106,13 +113,16 @@ public class ProductDataGateway {
 	}
 
 	public boolean delete(int id) {
+		
+		
 		String query = "DELETE FROM "+ table + " WHERE id = ?";
 		 
         try  {
         	 PreparedStatement preparedStmt = conn.prepareStatement(query);
         	 preparedStmt.setInt(1, id);
         	 preparedStmt.executeUpdate();
- 
+		     preparedStmt.close();
+		     
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -122,6 +132,8 @@ public class ProductDataGateway {
 	
 
 	public ArrayList<Product> findAll() {
+		
+		
 		String query = "SELECT * FROM " + table;
 		ArrayList<Product> products = new ArrayList();
 		try{
@@ -139,21 +151,23 @@ public class ProductDataGateway {
      			int quantity = result.getInt("quantity");
      			float rating = result.getFloat("rating");
      			
-     			ReviewDataGateway reviewGateway = new ReviewDataGateway();
+     			ReviewDataGateway reviewGateway = new ReviewDataGateway(conn);
      			ArrayList<ReviewModel> reviews = reviewGateway.findAllByProduct(id);
      			
-     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway();
+     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway(conn);
      			ArrayList<ProductImages> productImages = imageGateway.findAllByProduct(id);
      			ArrayList<String> images = new ArrayList();
      			for(ProductImages image: productImages){
      				images.add(image.getPicture());
      			}
      			
-     			Category category = new CategoryDataGateway().findById(categoryId);
+     			Category category = new CategoryDataGateway(conn).findById(categoryId);
      			products.add(new Product(id, name, description, images, category.getName(), price, discount, seller, guarantee,
      					quantity, reviews, rating));
 			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -163,11 +177,13 @@ public class ProductDataGateway {
 	
 	
 	public ArrayList<Product> findAllByCategory(String categoryName) {
+		
+		
 		String query = "SELECT * FROM " + table + " where category = ?";
 		ArrayList<Product> products = new ArrayList();
 		try{
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			Category category = new CategoryDataGateway().findByName(categoryName);
+			Category category = new CategoryDataGateway(conn).findByName(categoryName);
 			preparedStmt.setInt(1, category.getId());
        	 	ResultSet result = preparedStmt.executeQuery();
 			while(result.next()){
@@ -181,10 +197,10 @@ public class ProductDataGateway {
      			int quantity = result.getInt("quantity");
      			float rating = result.getFloat("rating");
      			
-     			ReviewDataGateway reviewGateway = new ReviewDataGateway();
+     			ReviewDataGateway reviewGateway = new ReviewDataGateway(conn);
      			ArrayList<ReviewModel> reviews = reviewGateway.findAllByProduct(id);
      			
-     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway();
+     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway(conn);
      			ArrayList<ProductImages> productImages = imageGateway.findAllByProduct(id);
      			ArrayList<String> images = new ArrayList();
      			for(ProductImages image: productImages){
@@ -194,7 +210,9 @@ public class ProductDataGateway {
      			products.add(new Product(id, name, description, images, categoryName, price, discount, seller, guarantee,
      					quantity, reviews, rating));
 			}
-			result.close();
+		     result.close();
+		     preparedStmt.close();
+		     
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -203,7 +221,8 @@ public class ProductDataGateway {
 
 
 	public Product findById(int id) {
-
+		
+		
 		String query = "SELECT * FROM " + table + " WHERE id = ?";
 		Product product = null;
 		   try  {
@@ -221,37 +240,30 @@ public class ProductDataGateway {
 	      			int quantity = result.getInt("quantity");
 	      			float rating = result.getFloat("rating");
 	      			
-	      			ReviewDataGateway reviewGateway = new ReviewDataGateway();
+	      			ReviewDataGateway reviewGateway = new ReviewDataGateway(conn);
 	     			ArrayList<ReviewModel> reviews = reviewGateway.findAllByProduct(id);
 	     			
-	     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway();
+	     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway(conn);
 	     			ArrayList<ProductImages> productImages = imageGateway.findAllByProduct(id);
 	     			ArrayList<String> images = new ArrayList();
 	     			for(ProductImages image: productImages){
 	     				images.add(image.getPicture());
 	     			}
 	     			
-	     			Category category = new CategoryDataGateway().findById(categoryId);
+	     			Category category = new CategoryDataGateway(conn).findById(categoryId);
 
 	      			product = new Product(id, name, description, images, category.getName(), price, discount, seller, guarantee,
 	      					quantity, reviews, rating);
 	     		}
 	     		result.close();
-	 
+	     		preparedStmt.close();
+	     		
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
 		return product;
 	}
 	
-	public void close(){
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 
 }

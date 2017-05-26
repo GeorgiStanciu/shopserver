@@ -2,6 +2,7 @@ package CommandHandlers;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.sql.Connection;
 
 import com.google.gson.Gson;
 
@@ -12,13 +13,12 @@ import DataGateway.OrderedDataGateway;
 public class ViewOrderedCommandHandler {
 
 	
-	public void viewOrdersCommandHandler(ObjectOutputStream os, Command command) throws IOException {
+	public void viewOrdersCommandHandler(ObjectOutputStream os, Command command, Connection conn) throws IOException {
 
-		OrderedDataGateway gateway = new OrderedDataGateway();
+		OrderedDataGateway gateway = new OrderedDataGateway(conn);
 		CommandResponse response = new CommandResponse();
 		response.setResponse(gateway.findAll());
 		String gson = new Gson().toJson(response);
         os.writeObject(gson);
-        gateway.close();
     }
 }

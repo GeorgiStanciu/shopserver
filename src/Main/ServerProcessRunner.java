@@ -1,5 +1,6 @@
 package Main;
 
+import java.sql.Connection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -118,100 +121,102 @@ public class ServerProcessRunner implements Runnable{
             
             	Command command = new DeserializateCommand(json).getCommand();
                 CommandEnum operationId = command.getCommand();
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/shop", "root", "");
+        	
                 switch(operationId) {
                 	case AddBasketCommand:
-                		addBasketCommandHandler.addBasketCommandHandler(os, command);
+                		addBasketCommandHandler.addBasketCommandHandler(os, command, conn);
                 		break;
                 	case AddFavoriteCommand:
-                		addFavoriteCommandHandler.addFavoriteCommandHandler(os, command);
+                		addFavoriteCommandHandler.addFavoriteCommandHandler(os, command, conn);
                 		break;
                 	case AddOrderedCommand:
-                		addOrderedCommandHandler.addOrderCommandHandler(os, command);
+                		addOrderedCommandHandler.addOrderCommandHandler(os, command, conn);
                 		break;
                 	case AddProductCommand:
-                		addProductCommandHandler.addProductCommandHandler(os, command);
+                		addProductCommandHandler.addProductCommandHandler(os, command, conn);
                 		break;
                 	case AddReviewCommand:
-                		addReviewCommandHandler.addReviewCommandHandler(os, command);
+                		addReviewCommandHandler.addReviewCommandHandler(os, command, conn);
                 		break;
                 	case AddUserCommand:
-                		addUserCommandHandler.addUserCommandHandler(os, command);
+                		addUserCommandHandler.addUserCommandHandler(os, command, conn);
                 		break;
                 	case AddProductToBasketCommand:
-                		addProductToBasketCommandHandler.addProductToBasketCommandHandler(os, command);
+                		addProductToBasketCommandHandler.addProductToBasketCommandHandler(os, command, conn);
                 		break;
                 		
                 	case GetBasketByUserCommand:
-                		getBasketByUserCommandHandler.getBasketCommandHandler(os, command);
+                		getBasketByUserCommandHandler.getBasketCommandHandler(os, command, conn);
                 		break;
                 	case GetFavoritesByUserCommand:
-                		getFavoriteByUserCommandHandler.getFavoriteCommandHandler(os, command);
+                		getFavoriteByUserCommandHandler.getFavoriteCommandHandler(os, command, conn);
                 		break;
                 	case GetOrderesByUserCommand:
-                		getOrderedByUserCommand.getOrderCommandHandler(os, command);
+                		getOrderedByUserCommand.getOrderCommandHandler(os, command, conn);
                 		break;
                 	case GetProductCommand:
-                		getProductCommandHandler.getProductCommandHandler(os, command);
+                		getProductCommandHandler.getProductCommandHandler(os, command, conn);
                 		break;
                 	case GetReviewsByProductCommand:
-                		getReviewByUserCommandHandler.getReviewCommandHandler(os, command);
+                		getReviewByUserCommandHandler.getReviewCommandHandler(os, command, conn);
                 		break;
                 	case GetUserCommand:
-                		getUserCommandHandler.getUserCommandHandler(os, command);
+                		getUserCommandHandler.getUserCommandHandler(os, command, conn);
                 		break;
                 	case GetProductByCategoryCommand:
-                		getProductsByCategoryCommandHandler.getProductsByCategoryCommandHandler(os, command);
+                		getProductsByCategoryCommandHandler.getProductsByCategoryCommandHandler(os, command, conn);
                 		break;
                 	case GetUserByFirebaseCommand:
-                		getUserByFirebaseCommandHandler.getUserCommandHandler(os, command);
+                		getUserByFirebaseCommandHandler.getUserCommandHandler(os, command, conn);
                 		break;
                 	case GetIsFavoriteProductCommand:
-                		getIsFavoriteProductCommandHandler.getIsFavoriteProductCommandHandler(os, command);
+                		getIsFavoriteProductCommandHandler.getIsFavoriteProductCommandHandler(os, command, conn);
                 		break;
                 		
                 	case RemoveFavoriteCommand:
-                		removeFavoriteCommandHandler.removeFavoriteCommandHandler(os, command);
+                		removeFavoriteCommandHandler.removeFavoriteCommandHandler(os, command, conn);
                 		break;
                 	case RemoveProductCommand:
-                		removeProductCommandHandler.removeProductCommandHandler(os, command);
+                		removeProductCommandHandler.removeProductCommandHandler(os, command, conn);
                 		break;
                 	case RemoveReviewCommand:
-                		removeReviewCommandHandler.removeReviewCommandHandler(os, command);
+                		removeReviewCommandHandler.removeReviewCommandHandler(os, command, conn);
                 		break;
                 	case RemoveUserCommand:
-                		removeUserCommandHandler.removeUserCommandHandler(os, command);
+                		removeUserCommandHandler.removeUserCommandHandler(os, command, conn);
                 		break;
                 	case RemoveProductFromBasketCommand:
-                		removeProductFromBasketCommandHandler.removeProductFromBasketCommandHandler(os, command);
+                		removeProductFromBasketCommandHandler.removeProductFromBasketCommandHandler(os, command, conn);
                 		break;
                 	
                 	case UpdateBasketCommand:
-                		updateBasketCommandHandler.updateBasketCommandHandler(os, command);
+                		updateBasketCommandHandler.updateBasketCommandHandler(os, command, conn);
                 		break;
                 	case UpdateFavoriteCommand:
-                		updateFavoriteCommandHandler.updateFavoriteCommandHandler(os, command);
+                		updateFavoriteCommandHandler.updateFavoriteCommandHandler(os, command, conn);
                 		break;
                 	case UpdateProductCommand:
-                		updateProductCommandHandler.updateProductCommandHandler(os, command);
+                		updateProductCommandHandler.updateProductCommandHandler(os, command, conn);
                 		break;
                 	case UpdateReviewCommand:
-                		updateReviewCommandHandler.updateReviewCommandHandler(os, command);
+                		updateReviewCommandHandler.updateReviewCommandHandler(os, command, conn);
                 		break;
                 	case UpdateUserCommand:
-                		updateUserCommandHandler.updateUserCommandHandler(os, command);
+                		updateUserCommandHandler.updateUserCommandHandler(os, command, conn);
                 		break;
                 	
                 	case ViewCategoriesCommandByParent:
-                		viewCategoryByParentCommandHandler.viewCategoriesCommandHandler(os, command);
+                		viewCategoryByParentCommandHandler.viewCategoriesCommandHandler(os, command, conn);
                 		break;
                 	case ViewOrderesCommand:
-                		viewOrderedCommandHandler.viewOrdersCommandHandler(os, command);
+                		viewOrderedCommandHandler.viewOrdersCommandHandler(os, command, conn);
                 		break;
                 	case ViewProductsCommand:
-                		viewProductsCommandHandler.viewProductsCommandHandler(os, command);
+                		viewProductsCommandHandler.viewProductsCommandHandler(os, command, conn);
                 		break;
                 	case ViewUsersCommand:
-                		viewUsersCommandHandler.viewUsersCommandHandler(os, command);
+                		viewUsersCommandHandler.viewUsersCommandHandler(os, command, conn);
                 		break;
                 	default:
                 		if(os != null)
@@ -222,6 +227,7 @@ public class ServerProcessRunner implements Runnable{
        	             		in.close();
        	             	in = null;
        	             	client.close();
+       	             	conn.close();
                 }
                 
             }
@@ -232,7 +238,10 @@ public class ServerProcessRunner implements Runnable{
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 			
 		
 		
