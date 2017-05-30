@@ -82,7 +82,8 @@ public class DeserializateCommand {
 				command.setObject(obj);
 		}
 		
-		else if(operationId == CommandEnum.ViewCategoriesCommandByParent || operationId == CommandEnum.GetProductByCategoryCommand || operationId == CommandEnum.GetUserByFirebaseCommand){
+		else if(operationId == CommandEnum.ViewCategoriesCommandByParent || operationId == CommandEnum.GetProductByCategoryCommand || operationId == CommandEnum.GetUserByFirebaseCommand
+				|| operationId == CommandEnum.GetProductsByString){
 			
 			JsonPrimitive jsonObj = (JsonPrimitive) jsonObject.get("object");
 			Object obj = gson.fromJson(jsonObj, String.class);

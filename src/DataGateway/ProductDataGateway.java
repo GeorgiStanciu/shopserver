@@ -218,6 +218,56 @@ public class ProductDataGateway {
 		} 
 		return products;
 	}
+	
+	
+public ArrayList<Product> findAllByString(String string) {
+		
+		String[] words = string.split(" ");
+		String query = "SELECT * FROM " + table + " where ";
+		for(int i = 0; i < words.length; i++){
+			if(i > 0)
+				query += " OR ";
+			query += "name LIKE '%" + words[i] + "%' OR description LIKE '%" + words[i] + "%'";
+		}
+		ArrayList<Product> products = new ArrayList();
+		try{
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+       	 	ResultSet result = preparedStmt.executeQuery();
+			while(result.next()){
+				int id = result.getInt("id");
+				String name = result.getString("name");
+				String description = result.getString("description");
+				float price = result.getFloat("price");
+     			int discount = result.getInt("discount");
+     			String seller = result.getString("seller");
+     			int guarantee = result.getInt("guarantee");
+     			int quantity = result.getInt("quantity");
+     			float rating = result.getFloat("rating");
+      			int categoryId = result.getInt("category");
+
+      			Category category = new CategoryDataGateway(conn).findById(categoryId);
+      			
+     			ReviewDataGateway reviewGateway = new ReviewDataGateway(conn);
+     			ArrayList<ReviewModel> reviews = reviewGateway.findAllByProduct(id);
+     			
+     			ProductImagesDataGateway imageGateway = new ProductImagesDataGateway(conn);
+     			ArrayList<ProductImages> productImages = imageGateway.findAllByProduct(id);
+     			ArrayList<String> images = new ArrayList();
+     			for(ProductImages image: productImages){
+     				images.add(image.getPicture());
+     			}
+     			
+     			products.add(new Product(id, name, description, images, category.getName(), price, discount, seller, guarantee,
+     					quantity, reviews, rating));
+			}
+		     result.close();
+		     preparedStmt.close();
+		     
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		return products;
+	}
 
 
 	public Product findById(int id) {

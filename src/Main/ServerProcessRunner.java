@@ -46,6 +46,7 @@ public class ServerProcessRunner implements Runnable{
     private GetProductsByCategoryCommandHandler getProductsByCategoryCommandHandler;
     private GetUserByFirebaseCommandHandler getUserByFirebaseCommandHandler;
     private GetIsFavoriteProductCommandHandler getIsFavoriteProductCommandHandler;
+    private GetProductsByStringCommandHandler getProductsByStringCommandHandler;
     
     private RemoveFavoriteCommandHandler removeFavoriteCommandHandler;
     private RemoveProductCommandHandler removeProductCommandHandler;
@@ -86,6 +87,7 @@ public class ServerProcessRunner implements Runnable{
 	    getProductsByCategoryCommandHandler = new GetProductsByCategoryCommandHandler();
 	    getUserByFirebaseCommandHandler = new GetUserByFirebaseCommandHandler();
 	    getIsFavoriteProductCommandHandler = new GetIsFavoriteProductCommandHandler();
+	    getProductsByStringCommandHandler = new GetProductsByStringCommandHandler();
 	    
 	    removeFavoriteCommandHandler = new RemoveFavoriteCommandHandler();
 	    removeProductCommandHandler = new RemoveProductCommandHandler();
@@ -172,6 +174,9 @@ public class ServerProcessRunner implements Runnable{
                 		break;
                 	case GetIsFavoriteProductCommand:
                 		getIsFavoriteProductCommandHandler.getIsFavoriteProductCommandHandler(os, command, conn);
+                		break;
+                	case GetProductsByString:
+                		getProductsByStringCommandHandler.getProductsByStringommandHandler(os, command, conn);
                 		break;
                 		
                 	case RemoveFavoriteCommand:

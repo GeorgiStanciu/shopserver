@@ -39,7 +39,7 @@ public enum CommandEnum {
 	GetUserCommand,
 	GetUserByFirebaseCommand,
 	GetIsFavoriteProductCommand,
-
+	GetProductsByString,
 	
 	EndConnectionCommand
 	

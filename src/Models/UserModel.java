@@ -15,6 +15,7 @@ public class UserModel implements Serializable {
     private String phone;
     private String cardNumber;
     private String sex;
+    private String function;
 
     public UserModel(){
         this.name = "";
@@ -52,7 +53,7 @@ public class UserModel implements Serializable {
 
     
     public UserModel(int id, String name, String email, String address, Date birthDate, String pictureUrl, String phone,
-			String cardNumber, String sex) {
+			String cardNumber, String sex, String function) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -63,6 +64,7 @@ public class UserModel implements Serializable {
 		this.phone = phone;
 		this.cardNumber = cardNumber;
 		this.sex = sex;
+		this.function = function;
 	}
     
     public UserModel( String name, String email, String address, Date birthDate, String pictureUrl, String phone,
@@ -154,6 +156,14 @@ public class UserModel implements Serializable {
 	public void setFirebaseId(String firebaseId) {
 		this.firebaseId = firebaseId;
 	}
+	public String getFunction() {
+		return function;
+	}
+	public void setFunction(String function) {
+		this.function = function;
+	}
     
+	
+	
     
 }
