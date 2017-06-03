@@ -1,5 +1,8 @@
 package Main;
+import java.sql.Connection;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -83,10 +86,6 @@ public class MainTest {
 //								order.getCost());
 //		}
 		
-		
-		//ProductDataGateway productGateway = new ProductDataGateway();
-		ArrayList<Product> products = new ArrayList();
-		ArrayList<String> images;
-
+	
 	}
 }

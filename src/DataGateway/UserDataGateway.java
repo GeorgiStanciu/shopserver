@@ -75,8 +75,9 @@ public class UserDataGateway {
 		     preparedStmt.setString(6, user.getPhone());
 		     preparedStmt.setString(7, user.getCardNumber());
 		     preparedStmt.setString(8, user.getSex());
-		     preparedStmt.setInt(9,  user.getId());
-		     preparedStmt.setString(10, user.getFunction());
+		     preparedStmt.setString(9, user.getFunction());
+		     preparedStmt.setInt(10,  user.getId());
+
 		     preparedStmt.executeUpdate();
 		     preparedStmt.close();
 		     

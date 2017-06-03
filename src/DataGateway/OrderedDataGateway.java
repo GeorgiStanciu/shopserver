@@ -89,7 +89,7 @@ public class OrderedDataGateway {
 				ArrayList<Product> products = new ArrayList<>();
 				ArrayList<Integer> quanities = new ArrayList<>();
 				
-				for(int i = 0; i <= orderedProducts.size(); i++){
+				for(int i = 0; i < orderedProducts.size(); i++){
 					products.add(orderedProducts.get(i).getProduct());
 					quanities.add(orderedProducts.get(i).getQuantity());
 				}

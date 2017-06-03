@@ -9,8 +9,6 @@ public class ProductImages implements Serializable{
 	private String picture;
 	
 	public ProductImages( int productId, String picture) {
-		super();
-		this.id = id;
 		this.productId = productId;
 		this.picture = picture;
 	}

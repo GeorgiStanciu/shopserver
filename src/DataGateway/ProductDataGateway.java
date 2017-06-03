@@ -40,14 +40,15 @@ public class ProductDataGateway {
 		     preparedStmt.execute();
 		     ResultSet result = preparedStmt.getGeneratedKeys();
 		     if(result.next()){
+		    	 id =  result.getInt(1);
 		    	 if(product.getImages() != null && product.getImages().size() >0){
 		    		 ProductImagesDataGateway imageGateway = new ProductImagesDataGateway(conn);
 		    		 for(int i = 0; i < product.getImages().size(); i++){
-		    			 ProductImages image = new ProductImages(result.getInt(1), product.getImages().get(i));
+		    			 ProductImages image = new ProductImages(id, product.getImages().get(i));
 		    			 imageGateway.add(image);
 		    		 }
 		    	 }
-		    	 id =  result.getInt(1);
+		    	 
 		     }
 		     result.close();
 		     preparedStmt.close();

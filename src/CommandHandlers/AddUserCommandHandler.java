@@ -23,12 +23,14 @@ public class AddUserCommandHandler {
 		UserModel user = (UserModel) command.getObject();
 		UserModel isUser = gateway.findByFirebaseId(user.getFirebaseId());
 		if(isUser == null){
-			response.setResponse(gateway.add(user));
+			int id = gateway.add(user);
+			user.setId(id);
+			response.setResponse(id);
 			String gson = new Gson().toJson(response);
 	        os.writeObject(gson);
 	        
 	        ShoppingBasketDataGateway basketGateway = new ShoppingBasketDataGateway(conn);
-	        ShoppingBasket basket = new ShoppingBasket(isUser);
+	        ShoppingBasket basket = new ShoppingBasket(user);
 	        basketGateway.add(basket);
 		}
 		else{
